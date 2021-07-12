@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HomepageController!{% endblock %}
+
+{% block body %}
+    <style>
+        .example-wrapper {
+            margin: 1em auto;
+            max-width: 800px;
+            width: 95%;
+            font: 18px/1.5 sans-serif;
+        }
+
+        .example-wrapper code {
+            background: #F5F5F5;
+            padding: 2px 6px;
+        }
+    </style>
+
+    <div class="example-wrapper">
+
+        <h1>Main page</h1>
+        {% if is_granted('ROLE_USER') %}
+            <h3>Create activity</h3>
+            <ul>
+                <li><a href="{{ path('license_plate_index') }}">View License Plates</a></li>
+                <li><a href="{{ path('license_plate_new') }}">Add License Plate</a></li>
+                <li><a href="{{ path('imblocker') }}">I am blocker</a></li>
+                <li><a href="{{ path('imblockee') }}">I am blockee</a></li>
+                <li><a href="{{ path('change_pwd') }}">Change password</a></li>
+                <li><a href="{{ path('app_logout') }}">Logout</a></li>
+            </ul>
+        {% else %}
+            <a href="{{ path('app_login') }}">Login</a>
+            <a href="{{ path('user_new') }}">Create Account</a>
+        {% endif %}
+
+    </div>
+{% endblock %}
