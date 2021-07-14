@@ -33,6 +33,7 @@ class BlockeeType extends AbstractType
                         ->setParameter('val', $this->security->getUser());
                 },
                 'choice_label' => 'license_plate',
+
             ])
         ;
     }

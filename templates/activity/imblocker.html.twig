@@ -4,8 +4,9 @@
 
 {% block body %}
     <h1>Create activity</h1>
-
+    <div class="container">
     {{ include('activity/_form.html.twig') }}
 
-    <a href="{{ path('homepage') }}">back to homepage</a>
+    <a class="btn btn-primary btn-lg mt-3" href="{{ path('my_account') }}">Back to my account</a>
+    </div>
 {% endblock %}

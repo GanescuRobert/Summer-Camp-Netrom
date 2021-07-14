@@ -8,14 +8,11 @@
     {% endfor %}
 
     <h1>Register</h1>
-
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.firstName) }}
-        {{ form_row(registrationForm.lastName) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {label: 'Password' }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
-
-        <button type="submit" class="btn">Register</button>
+    {{ form_start(registrationForm,{'attr':{'class':'container'}}) }}
+        {{ form_row(registrationForm.email, {'attr': {'class': 'form-control'},'label_attr': {'class': 'row'}}) }}
+        {{ form_row(registrationForm.firstName, {'attr': {'class': 'form-control'},'label_attr': {'class': 'row'}})}}
+        {{ form_row(registrationForm.lastName, {'attr': {'class': 'form-control'},'label_attr': {'class': 'row'}}) }}
+        {{ form_row(registrationForm.plainPassword, {'label':'Password','attr': {'class': 'form-control'},'label_attr': {'class': 'row'}}) }}
+        <button type="submit" class="btn btn-primary btn-lg btn-block mt-3">Register</button>
     {{ form_end(registrationForm) }}
 {% endblock %}

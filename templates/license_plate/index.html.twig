@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}LicensePlate index{% endblock %}
+{% block title %}My cars{% endblock %}
 
 {% block body %}
-    <h1>LicensePlate index</h1>
-
+    <h1>My cars</h1>
+    <div class="container">
     <table class="table">
         <thead>
             <tr>
@@ -20,7 +20,6 @@
                 <td>{{ license_plate.licensePlate }}</td>
                 <td>
                     <a href="{{ path('license_plate_show', {'id': license_plate.id}) }}">show</a>
-                    <a href="{{ path('license_plate_edit', {'id': license_plate.id}) }}">edit</a>
                 </td>
             </tr>
         {% else %}
@@ -31,6 +30,12 @@
         </tbody>
     </table>
 
-    <a href="{{ path('license_plate_new') }}">Create new</a>
-    <a href="{{ path('homepage') }}">back to homepage</a>
+    <div class="row mx-5">
+        <a class="btn btn-primary btn-lg mt-3" href="{{ path('license_plate_new') }}">Create new</a>
+    </div>
+        <div class="row mx-5">
+        <a class="btn btn-primary btn-lg mt-3" href="{{ path('my_account') }}">Back to my account</a>
+    </div>
+
+    </div>
 {% endblock %}

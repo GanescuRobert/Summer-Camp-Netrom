@@ -1,12 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}LicensePlate{% endblock %}
+{% block title %}Show licenseplate{% endblock %}
 
 {% block body %}
-    <h1>LicensePlate</h1>
-
-    <table class="table">
-        <tbody>
+    <h1>Show licenseplate</h1>
+    <div class="container">
+        <table class="table">
+            <tbody>
             <tr>
                 <th>Id</th>
                 <td>{{ license_plate.id }}</td>
@@ -15,12 +15,17 @@
                 <th>License_plate</th>
                 <td>{{ license_plate.licensePlate }}</td>
             </tr>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+        <div class="row mx-5">
+            <a class="btn btn-primary btn-lg mt-3" href="{{ path('license_plate_edit', {'id': license_plate.id}) }}">edit</a>
+        </div>
+        <div class="row mx-5">
+            <a class="btn btn-primary btn-lg mt-3" href="{{ path('license_plate_delete', {'id': license_plate.id}) }}">delete</a>
+        </div>
+        <div class="row mx-5">
+            <a class="btn btn-primary btn-lg mt-3" href="{{ path('license_plate_index') }}">Back to my cars</a>
+        </div>
 
-    <a href="{{ path('license_plate_index') }}">back to list</a>
-
-    <a href="{{ path('license_plate_edit', {'id': license_plate.id}) }}">edit</a>
-
-    {{ include('license_plate/_delete_form.html.twig') }}
+    </div>
 {% endblock %}

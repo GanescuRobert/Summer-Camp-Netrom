@@ -7,16 +7,18 @@
         <div class="alert alert-danger" role="alert">{{ flashError }}</div>
     {% endfor %}
     <h1>Reset your password</h1>
-
-    {{ form_start(requestForm) }}
-        {{ form_row(requestForm.email) }}
-        <div>
+    <div class="container">
+        <div class="row">
             <small>
                 Enter your email address and we we will send you a
                 link to reset your password.
             </small>
         </div>
+    {{ form_start(requestForm,{'attr':{'class':'container'}}) }}
+        {{ form_row(requestForm.email,{'attr': {'class': 'form-control'},'label_attr': {'class': 'row'}}) }}
 
-        <button class="btn btn-primary">Send password reset email</button>
+
+        <button class="btn btn-primary mt-3">Send password reset email</button>
     {{ form_end(requestForm) }}
+    </div>
 {% endblock %}

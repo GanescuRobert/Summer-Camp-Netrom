@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Activity;
 use App\Entity\LicensePlate;
 use App\Form\LicensePlateType;
 use App\Repository\LicensePlateRepository;
 use App\Service\ActivitiesService;
+use App\Service\LicenseplatesService;
 use App\Service\MailerService;
 use Doctrine\ORM\NonUniqueResultException as NonUniqueResultExceptionAlias;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,49 +30,58 @@ class LicensePlateController extends AbstractController
      * @throws NonUniqueResultExceptionAlias
      */
     #[Route('/new', name: 'license_plate_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, ActivitiesService $activity, MailerService $mailer, LicensePlateRepository $licensePlateRepository): Response
+    public function new(Request $request, ActivitiesService $activity, MailerService $mailer, LicensePlateRepository $licensePlateRepository, LicenseplatesService $licenseplatesService): Response
     {
+        $user = $this->getUser();
         $licensePlate = new LicensePlate();
+        $entityManager = $this->getDoctrine()->getManager();
+
         $form = $this->createForm(LicensePlateType::class, $licensePlate);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $licensePlate = $licensePlateRepository->findOneBy(['license_plate' => $licensePlate->getLicensePlate()]);
-            $licensePlate->setUser($this->getUser());
 
-            $licensePlate->setLicensePlate($this->preprocessLP($licensePlate->getLicensePlate()));
-            $entityManager->persist($licensePlate);
-            $entityManager->flush();
+            $licensePlate->setLicensePlate($licenseplatesService->processLicenseplate($licensePlate->getLicensePlate()));
+            $entrylicensePlate = $licensePlateRepository->findOneBy(['license_plate' => $licensePlate->getLicensePlate()]);
 
-            if ($licensePlate and !$licensePlate->getUser()) {
+            if ($entrylicensePlate and !$entrylicensePlate->getUser()) {
+                $entrylicensePlate->setUser($user);
+
                 $blockerLP = $activity->whoBlockedMe($licensePlate->getLicensePlate());
                 if ($blockerLP) {
                     $blockerEntry = $licensePlateRepository->findOneBy(['license_plate' => $blockerLP]);
-                    $mailer->sendBlockerEmail($blockerEntry->getUser(), $licensePlate->getUser(), $licensePlate->getLicensePlate());
+                    $activity = $entityManager->getRepository(Activity::class)->findOneBy(['blocker' => $blockerLP]);
+
+                    $mailer->sendBlockerEmail($blockerEntry->getUser(), $entrylicensePlate->getUser(), $licensePlate->getLicensePlate());
+                    $activity->setStatus(1);
+                    $this->addFlash('warning', 'Your car has been blocked by ' . $activity->getBlocker());
                 }
 
                 $blockeeLP = $activity->iveBlockedSomebody($licensePlate->getLicensePlate());
                 if ($blockeeLP) {
                     $blockeeEntry = $licensePlateRepository->findOneBy(['license_plate' => $blockeeLP]);
+                    $activity = $entityManager->getRepository(Activity::class)->findOneBy(['blockee' => $blockeeLP]);
+
+                    $mailer->sendBlockerEmail($blockeeEntry->getUser(), $entrylicensePlate->getUser(), $blockeeLP);
+                    $activity->setStatus(1);
                     $this->addFlash('danger', 'You blocked someone!' . ' Email sent to ' . $blockeeEntry->getUser()->getEmail());
                 }
+            } else {
+                $licensePlate->setUser($user);
+                $entityManager->persist($licensePlate);
+                $entityManager->flush();
+                $this->addFlash(
+                    'success',
+                    'The car ' . $licensePlate->getLicensePlate() . ' has been added to your account!'
+                );
             }
             return $this->redirectToRoute('license_plate_index');
         }
         return $this->render('license_plate/new.html.twig', [
-                'license_plate' => $licensePlate,
-                'form' => $form->createView(),
-            ]);
+            'license_plate' => $licensePlate,
+            'form' => $form->createView(),
+        ]);
 
-    }
-
-    public function preprocessLP(string $licensePlate)
-    {
-        #$licensePlate = str_replace(' ', '-', $licensePlate);
-        $licensePlate = preg_replace('/[^A-Za-z0-9]/', '', $licensePlate);
-        $licensePlate = strtoupper($licensePlate);
-        return $licensePlate;
     }
 
     #[Route('/{id}', name: 'license_plate_show', methods: ['GET'])]
@@ -82,14 +93,17 @@ class LicensePlateController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'license_plate_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, LicensePlate $licensePlate): Response
+    public function edit(Request $request, LicensePlate $licensePlate, LicenseplatesService $licenseplatesService): Response
     {
         $form = $this->createForm(LicensePlateType::class, $licensePlate);
         $form->handleRequest($request);
-
+        $licensePlate->setLicensePlate($licenseplatesService->processLicenseplate($licensePlate->getLicensePlate()));
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
-
+            $this->addFlash(
+                'success',
+                'The car ' . $licensePlate->getLicensePlate() . ' has been updated!'
+            );
             return $this->redirectToRoute('license_plate_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -100,14 +114,32 @@ class LicensePlateController extends AbstractController
     }
 
     #[Route('/{id}', name: 'license_plate_delete', methods: ['POST'])]
-    public function delete(Request $request, LicensePlate $licensePlate): Response
+    public function delete(Request $request, LicensePlate $licensePlate, ActivitiesService $activityService): Response
     {
+        $oldLicensePlate = $licensePlate->getLicensePlate();
+
+        $blocker = $activityService->iveBlockedSomebody($oldLicensePlate);
+        $blockee = $activityService->whoBlockedMe($oldLicensePlate);
+
+        if ($blocker || $blockee) {
+            $this->addFlash(
+                'danger',
+                "Report active."
+            );
+
+            return $this->redirectToRoute('license_plate_index');
+        }
+
         if ($this->isCsrfTokenValid('delete' . $licensePlate->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($licensePlate);
             $entityManager->flush();
+            $this->addFlash(
+                'success',
+                'License plate ' . $licensePlate->getLicensePlate() . ' was successfully deleted!'
+            );
         }
 
-        return $this->redirectToRoute('license_plate_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('license-plate/index');
     }
 }

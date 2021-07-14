@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Change password{% endblock %}
+
+{% block body %}
+    <h1>Change password</h1>
+    <div class="container">    {{ include('resetPassword/_form.html.twig') }}
+
+        <div class="row mx-5">
+            <a class="btn btn-primary btn-lg mt-3" href="{{ path('my_account') }}">Back to my account</a>
+        </div>
+    </div>
+
+{% endblock %}

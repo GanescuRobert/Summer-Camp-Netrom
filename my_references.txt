@@ -1,0 +1,122 @@
+#!
+https://www.py4u.net/discuss/34517
+
+
+#!
+Install:
+	To use 'composer' you have to install it from here:
+		https://getcomposer.org/Composer-Setup.exe
+	To use 'symfony' you have to install it from here:
+		https://get.symfony.com/cli/setup.exe
+	To use 'git' you have to install it from here:
+		https://github.com/git-for-windows/git/releases/download/v2.32.0.windows.1/Git-2.32.0-64-bit.exe
+Create:
+	To use symfony to create a controller you need:
+		CMD - composer require doctrine/annotations
+		CMD - composer require symfony/maker-bundle --dev
+		CMD - symfony console make:controller "controller-name"
+	to use 'security' install security-bundle
+		CMD - composer require security
+		CMD - composer require req-check
+	or
+		Go to https://packagist.org/packages/sensiolabs/security-checker
+		And https://github.com/fabpot/local-php-security-checker#local-php-security-checker
+		Add in "composer.json" -> scripts -> auto-scripts - '"php-cs":"script"'
+		Before you go on "https://github.com/fabpot/local-php-security-checker/releases"
+		Download your exe file and then rename it to "php-sc"
+		After that you have to add path to enviroment variable path.
+	To use templates:
+		CMD - composer require twig
+	To use profiler (debuger):
+		CMD - composer require profiler --dev
+		CMD - composer require debug
+		CMD - composer unpack symfony/debug
+
+symfony console make:docker:database -> create yaml file for docker container
+docker-compose up -d -> create container on docker
+docker-compose exec database mysql -u root --password=password -> execute mysql command in container
+docker-compose down -> turn down server
+composer require --dev doctrine/doctrine-fixtures-bundle symfony/debug-bundle symfony/maker-bundle symfony/var-dumper symfony/web-profiler-bundle zenstruck/foundry
+composer require symfonycasts/reset-password-bundle symfony/mailer doctrine/orm symfony/asset symfony/flex symfony/webpack-encore-bundle twig/twig twig/extra-bundle doctrine/doctrine-bundle doctrine/doctrine-migrations-bundle symfony/security-csrf doctrine/annotations symfony/form symfony/validator annotations
+composer require security
+"docker-compose up -d" -> "symfony serve -d" -> DATABASE_URL = "docker container database url".
+
+
+validari:
+
+
+#!
+symfony new "name_proj" (create new project)
+symfony check:req (check for requirements)
+
+Php:
+	server:
+		php -S 127.0.0.1:8000 -t public/ (start server on ip+port)
+		php bin/console list debug (to see the list of all commands available)
+		php bin/console make:migration
+		php bin/console doctrine:migrations:status
+		php bin/console doctrine:migrations:generate
+		php bin/console doctrine:migrations:migrate
+		php bin/console crud
+		php bin/console make:appUser
+		php bin/console make:user
+Symfony:
+	server:
+		symfony server (start server)
+		symfony server:status (status of server)
+		symfony server -d (start in background)
+		symfony server:start (start server)
+		symfony server:stop (stop server)
+
+Composer:
+	require:
+		annotations (to create routes)
+		template (to create template)
+		profiler --dev
+		debug
+		asset
+		symfony/maker-bundle --dev
+
+	recipes: (show all recipes installed)
+		"recipe-name" (show more details about a recipe)
+	remove:
+		"recipe-name" (remove a recipe)
+	unpack:
+		symfony/debug-pack
+
+Add in "composer.json" -> scripts -> auto-scripts - '"php-cs":"script"'
+Before that you have to go on "https://github.com/fabpot/local-php-security-checker/releases" download your exe file and then rename it to "php-sc", after that you have to add path to enviroment variable paths.
+
+
+References:
+
+flex.symfony.com
+twig.symfony.com
+https://symfony.com/doc/current/bundles/DoctrineMigrationsBundle/index.html
+
+notDev
+symfony composer req form validator annotations orm twig
+Dev
+symfony composer req profiler maker orm-fixtures phpunit browser-kit dama/doctrine-test-bundle --dev
+
+DATABASE_URL="mysql://root:1234@127.0.0.1:3307/blockmedb?serverVersion=mariadb-10.5.8"
+
+
+
+
+create table activity(
+                     status int(1),
+                     blocker varchar(25),
+                     blockee varchar(25),
+                     constraint activity_fk_subject foreign key(blocker) references license_plate(license_plate),
+                     constraint activity_fk_student foreign key(blockee) references license_plate(license_plate)
+                     );
+search:
+phpunit
+psr4
+
+composer require symfony/mailer
+
+form / choices
+choice_loader -> trebuie utilizat entity type
+query builder

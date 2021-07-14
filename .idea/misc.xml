@@ -4,4 +4,7 @@
     <suppressed_annotations>@Assert\Length</suppressed_annotations>
     <suppressed_annotations>@SecurityAssert\UserPassword</suppressed_annotations>
   </component>
+  <component name="WebPackConfiguration">
+    <option name="mode" value="DISABLED" />
+  </component>
 </project>
