@@ -1,9 +1,9 @@
 {{ form_start(form) }}
     {{ form_widget(form) }}
-<div class="row mx-5">
+<div class="row w-50">
     <button class="btn btn-primary btn-lg mt-3">{{ button_label|default('Save') }}</button>
 </div>
-<div class="row mx-5">
+<div class="row w-50">
     <a class="btn btn-primary btn-lg mt-3" href="{{ path('license_plate_index') }}">Back to my cars</a>
 </div>
 {{ form_end(form) }}

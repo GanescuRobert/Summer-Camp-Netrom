@@ -4,6 +4,7 @@
 namespace App\Service;
 
 use App\Entity\Activity;
+use App\Entity\User;
 use App\Repository\ActivityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
@@ -68,6 +69,24 @@ class ActivitiesService
             return $blocker->getBlocker();
         }
         return '';
+    }
+    /**
+     * @param User $user
+     * @param LicenseplatesService $licenseplateService
+     * @return array|null
+     */
+    public function getMyLPSasBlocker (User $user, LicenseplatesService $licenseplateService): ?array
+    {
+        return $this->activityRepo->findBy(['blockee' => $licenseplateService->getAllLicensePlates($user)]);
+    }
+    /**
+     * @param User $user
+     * @param LicenseplatesService $licensePlateService
+     * @return array|null
+     */
+    public function getMyLPSasBlockee (User $user, LicenseplatesService $licenseplateService): ?array
+    {
+        return $this->activityRepo->findBy(['blocker' => $licenseplateService->getAllLicensePlates($user)]);
     }
 
 }

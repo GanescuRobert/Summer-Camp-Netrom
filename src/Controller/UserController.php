@@ -25,8 +25,8 @@ class UserController extends AbstractController
     #[Route('/', name: 'my_account')]
     public function index(): Response
     {
-        return $this->render('user/index.html.twig', [
-            'controller_name' => 'UserController',
+        return $this->render('user/index.html.twig',[
+            'useridentifier' => $this->getUser()->getEmail()
         ]);
     }
 
@@ -85,7 +85,7 @@ class UserController extends AbstractController
                 $entityManager->persist($licensePlate);
                 $entityManager->flush();
             }
-
+            $activity->setStatus(1);
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($activity);
             $entityManager->flush();
@@ -123,7 +123,7 @@ class UserController extends AbstractController
                 $entityManager->persist($licensePlate);
                 $entityManager->flush();
             }
-
+            $activity->setStatus(1);
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($activity);
             $entityManager->flush();

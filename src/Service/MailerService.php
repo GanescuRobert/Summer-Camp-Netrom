@@ -8,6 +8,7 @@ use App\Entity\User;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Message;
 use Symfony\Component\Routing\Annotation\Route;
 
 class MailerService
@@ -84,6 +85,21 @@ class MailerService
             ->context([
                 'blocker' => $blocker->getUserIdentifier(),
                 'blocker_license_plate' => $license_plate,
+            ]);
+
+        $this->mailer->send($email);
+    }
+    public function send_time_Blockee(User $blocker, User $blockee, string $license_plate, int $time){
+        $email = (new TemplatedEmail())
+            ->from('contact@whoblockedme.com')
+            ->to($blockee->getUserIdentifier())
+            ->subject('I`m comming!')
+            ->htmlTemplate('mailer/blockeeEmail.html.twig')
+
+            ->context([
+                'blocker' => $blocker->getUserIdentifier(),
+                'blocker_license_plate' => $license_plate,
+                'time' => $time
             ]);
 
         $this->mailer->send($email);

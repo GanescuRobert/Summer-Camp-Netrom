@@ -43,11 +43,17 @@ class LicensePlateController extends AbstractController
 
             $licensePlate->setLicensePlate($licenseplatesService->processLicenseplate($licensePlate->getLicensePlate()));
             $entrylicensePlate = $licensePlateRepository->findOneBy(['license_plate' => $licensePlate->getLicensePlate()]);
+            $licensePlate->setUser($user);
+
+            $entityManager->persist($licensePlate);
+            $entityManager->flush();
 
             if ($entrylicensePlate and !$entrylicensePlate->getUser()) {
                 $entrylicensePlate->setUser($user);
 
                 $blockerLP = $activity->whoBlockedMe($licensePlate->getLicensePlate());
+                $blockeeLP = $activity->iveBlockedSomebody($licensePlate->getLicensePlate());
+
                 if ($blockerLP) {
                     $blockerEntry = $licensePlateRepository->findOneBy(['license_plate' => $blockerLP]);
                     $activity = $entityManager->getRepository(Activity::class)->findOneBy(['blocker' => $blockerLP]);
@@ -56,8 +62,6 @@ class LicensePlateController extends AbstractController
                     $activity->setStatus(1);
                     $this->addFlash('warning', 'Your car has been blocked by ' . $activity->getBlocker());
                 }
-
-                $blockeeLP = $activity->iveBlockedSomebody($licensePlate->getLicensePlate());
                 if ($blockeeLP) {
                     $blockeeEntry = $licensePlateRepository->findOneBy(['license_plate' => $blockeeLP]);
                     $activity = $entityManager->getRepository(Activity::class)->findOneBy(['blockee' => $blockeeLP]);
@@ -67,9 +71,6 @@ class LicensePlateController extends AbstractController
                     $this->addFlash('danger', 'You blocked someone!' . ' Email sent to ' . $blockeeEntry->getUser()->getEmail());
                 }
             } else {
-                $licensePlate->setUser($user);
-                $entityManager->persist($licensePlate);
-                $entityManager->flush();
                 $this->addFlash(
                     'success',
                     'The car ' . $licensePlate->getLicensePlate() . ' has been added to your account!'
@@ -93,40 +94,63 @@ class LicensePlateController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'license_plate_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, LicensePlate $licensePlate, LicenseplatesService $licenseplatesService): Response
+    public function edit(Request $request, LicensePlate $licenseplate, LicenseplatesService $licenseplateService, LicensePlateRepository $licensePlateRepository, ActivitiesService $activityService): Response
     {
-        $form = $this->createForm(LicensePlateType::class, $licensePlate);
+        $newlicenseplate = new LicensePlate();
+
+        $form = $this->createForm(LicensePlateType::class, $newlicenseplate);
         $form->handleRequest($request);
-        $licensePlate->setLicensePlate($licenseplatesService->processLicenseplate($licensePlate->getLicensePlate()));
+
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $newlicenseplate->setLicensePlate($licenseplateService->processLicenseplate($newlicenseplate->getLicensePlate()));
+
+            if ($licenseplate->getLicensePlate() == $newlicenseplate) {
+                $this->addFlash(
+                    'danger',
+                    "Report active."
+                );
+                return $this->redirectToRoute('license_plate_index');
+            }
+
+            $blocker = $activityService->iveBlockedSomebody($licenseplate);
+            $blockee = $activityService->whoBlockedMe($licenseplate);
+            if ($blocker || $blockee) {
+                $this->addFlash(
+                    'danger',
+                    "Report active."
+                );
+
+                return $this->redirectToRoute('license_plate_index');
+            }
             $this->addFlash(
                 'success',
-                'The car ' . $licensePlate->getLicensePlate() . ' has been updated!'
+                "Licenseplate " . $licenseplate->getLicensePlate() . " has been changed to " . $newlicenseplate
             );
-            return $this->redirectToRoute('license_plate_index', [], Response::HTTP_SEE_OTHER);
+            $licenseplate->setLicensePlate($newlicenseplate);
+            $this->getDoctrine()->getManager()->flush();
+            return $this->redirectToRoute('license_plate_index');
         }
 
-        return $this->renderForm('license_plate/edit.html.twig', [
-            'license_plate' => $licensePlate,
-            'form' => $form,
+        return $this->render('license_plate/edit.html.twig', [
+            'license_plate' => $licenseplate,
+            'form' => $form->createView(),
         ]);
     }
 
-    #[Route('/{id}', name: 'license_plate_delete', methods: ['POST'])]
+    /**
+     * @throws NonUniqueResultExceptionAlias
+     */
+    #[Route('/{id}/delete', name: 'license_plate_delete', methods: ['POST'])]
     public function delete(Request $request, LicensePlate $licensePlate, ActivitiesService $activityService): Response
     {
-        $oldLicensePlate = $licensePlate->getLicensePlate();
-
-        $blocker = $activityService->iveBlockedSomebody($oldLicensePlate);
-        $blockee = $activityService->whoBlockedMe($oldLicensePlate);
+        $blocker = $activityService->iveBlockedSomebody($licensePlate->getLicensePlate());
+        $blockee = $activityService->whoBlockedMe($licensePlate->getLicensePlate());
 
         if ($blocker || $blockee) {
             $this->addFlash(
                 'danger',
                 "Report active."
             );
-
             return $this->redirectToRoute('license_plate_index');
         }
 
@@ -136,10 +160,9 @@ class LicensePlateController extends AbstractController
             $entityManager->flush();
             $this->addFlash(
                 'success',
-                'License plate ' . $licensePlate->getLicensePlate() . ' was successfully deleted!'
+                'License plate ' . $licensePlate->getLicensePlate() . ' was successfully deleted'
             );
         }
-
-        return $this->redirectToRoute('license-plate/index');
+        return $this->redirectToRoute('license_plate_index');
     }
 }

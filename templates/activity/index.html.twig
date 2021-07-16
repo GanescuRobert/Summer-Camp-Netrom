@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ActivityController!{% endblock %}
+
+{% block body %}
+    <div class="container w-25">
+        <h2>Activity: I'm blocker</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Blocker</th>
+                <th>Blockee</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for activity in activities %}
+                <tr>
+                    <td class="align-middle">{{ activity.blocker }}</td>
+                    <td class="align-middle">{{ activity.blockee }}</td>
+                    <td class="d-flex align-middle justify-content-around">
+                        <form method="post" action="{{ path('send_time', {'id': activity.id}) }}">
+                            <button class="btn btn-primary btn-lg">Send time</button>
+                            <label for="time">Time (between 1 and 30):</label>
+                            <input type="number" id="time" name="time" min="1" max="30">
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="container w-25">
+        <h2>Activity: I'm blockee</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Blocker</th>
+                <th>Blockee</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for activity in activities %}
+                <tr>
+                    <td class="align-middle">{{ license_plate.id }}</td>
+                    <td class="align-middle">{{ license_plate.licensePlate }}</td>
+                    <td class="d-flex align-middle justify-content-around">
+                        <form method="post" action="{{ path('delete_activity', {'id': activity.id}) }}">
+                            <button class="btn btn-primary btn-lg">I'm unblocked</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

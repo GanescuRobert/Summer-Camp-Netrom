@@ -4,38 +4,42 @@
 
 {% block body %}
     <h1>My cars</h1>
-    <div class="container">
-    <table class="table">
-        <thead>
+    <div class="container w-75">
+        <table class="table">
+            <thead>
             <tr>
                 <th>Id</th>
                 <th>License_plate</th>
                 <th>actions</th>
             </tr>
-        </thead>
-        <tbody>
-        {% for license_plate in license_plates %}
-            <tr>
-                <td>{{ license_plate.id }}</td>
-                <td>{{ license_plate.licensePlate }}</td>
-                <td>
-                    <a href="{{ path('license_plate_show', {'id': license_plate.id}) }}">show</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="3">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            {% for license_plate in license_plates %}
+                <tr>
+                    <td class="align-middle">{{ license_plate.id }}</td>
+                    <td class="align-middle">{{ license_plate.licensePlate }}</td>
+                    <td class="d-flex align-middle justify-content-around">
+                        <a class="btn btn-primary btn-lg "
+                           href="{{ path('license_plate_show', {'id': license_plate.id}) }}">Show</a>
+                        <a class="btn btn-primary btn-lg "
+                           href="{{ path('license_plate_edit', {'id': license_plate.id}) }}">Edit</a>
+                        <a>{{ include('license_plate/_delete_form.html.twig', {'button_label': 'delete'}) }}</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
 
-    <div class="row mx-5">
-        <a class="btn btn-primary btn-lg mt-3" href="{{ path('license_plate_new') }}">Create new</a>
-    </div>
         <div class="row mx-5">
-        <a class="btn btn-primary btn-lg mt-3" href="{{ path('my_account') }}">Back to my account</a>
-    </div>
+            <a class="btn btn-primary btn-lg mt-3" href="{{ path('license_plate_new') }}">Create new</a>
+        </div>
+        <div class="row mx-5">
+            <a class="btn btn-primary btn-lg mt-3" href="{{ path('my_account') }}">Back to my account</a>
+        </div>
 
     </div>
 {% endblock %}

@@ -4,7 +4,7 @@
 
 {% block body %}
     <h1>Show licenseplate</h1>
-    <div class="container">
+    <div class="container w-75">
         <table class="table">
             <tbody>
             <tr>
@@ -17,15 +17,10 @@
             </tr>
             </tbody>
         </table>
-        <div class="row mx-5">
-            <a class="btn btn-primary btn-lg mt-3" href="{{ path('license_plate_edit', {'id': license_plate.id}) }}">edit</a>
+        <div class="container w-50">
+            <div class="row ">
+                <a class="btn btn-primary btn-lg mt-3" href="{{ path('license_plate_index') }}">Back to my cars</a>
+            </div>
         </div>
-        <div class="row mx-5">
-            <a class="btn btn-primary btn-lg mt-3" href="{{ path('license_plate_delete', {'id': license_plate.id}) }}">delete</a>
-        </div>
-        <div class="row mx-5">
-            <a class="btn btn-primary btn-lg mt-3" href="{{ path('license_plate_index') }}">Back to my cars</a>
-        </div>
-
     </div>
 {% endblock %}

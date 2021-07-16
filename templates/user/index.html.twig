@@ -4,22 +4,26 @@
 
 {% block body %}
 
-    <h1>My account</h1>
-    <div class="container">
-        <div class="row mx-5">
+    <h1>My account {{ useridentifier }} </h1>
+    <div class="container w-50">
+        <div class="row ">
             <a class="btn btn-primary btn-lg mt-3" href="{{ path('license_plate_index') }}">My cars</a>
         </div>
-        <div class="row mx-5">
+        <div class="row ">
+            <a class="btn btn-primary btn-lg mt-3" href="{{ path('activity') }}">My activities</a>
+        </div>
+        <div class="row ">
             <a class="btn btn-primary btn-lg mt-3" href="{{ path('imblocker') }}">I've blocked someone</a>
         </div>
-        <div class="row mx-5">
+        <div class="row ">
             <a class="btn btn-primary btn-lg mt-3" href="{{ path('imblockee') }}">Someone blocked me </a>
         </div>
-        <div class="row mx-5">
+        <div class="row ">
             <a class="btn btn-primary btn-lg mt-3" href="{{ path('change_pwd') }}">Change password</a>
         </div>
-        <div class="row mx-5">
+        <div class="row ">
             <a class="btn btn-primary btn-lg mt-3" href="{{ path('app_logout') }}">Logout</a>
         </div>
     </div>
+
 {% endblock %}

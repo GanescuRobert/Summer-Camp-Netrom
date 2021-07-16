@@ -8,17 +8,21 @@
     {% endfor %}
     <h1>Reset your password</h1>
     <div class="container">
-        <div class="row">
-            <small>
-                Enter your email address and we we will send you a
-                link to reset your password.
-            </small>
+
+        {{ form_start(requestForm,{'attr':{'class':'container'}}) }}
+
+        {{ form_row(requestForm.email,{'attr': {'class': 'form-control','placeholder': 'Enter your email address and we we will send you a link to reset your password.'},'label_attr': {'class': 'row'}}) }}
+        <div class="row m-auto">
+            <div class="row mt-3 justify-content-between ">
+                <div class="col-auto">
+                    <a class="btn btn-primary btn-lg mt-3" href="{{ path('homepage') }}">Back to
+                        homepage</a>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-primary btn-lg mt-3">Send password reset email</button>
+                </div>
+            </div>
         </div>
-    {{ form_start(requestForm,{'attr':{'class':'container'}}) }}
-        {{ form_row(requestForm.email,{'attr': {'class': 'form-control'},'label_attr': {'class': 'row'}}) }}
-
-
-        <button class="btn btn-primary mt-3">Send password reset email</button>
-    {{ form_end(requestForm) }}
+        {{ form_end(requestForm) }}
     </div>
 {% endblock %}
